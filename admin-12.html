@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>USDT Reward Hub — Admin</title>
+<style>
+:root{
+  --accent:#17c98d; --accent2:#7c5cff; --gold:#ffc94d; --danger:#ff5c7c;
+  --text:#f4f6ff; --text2:#c2c8ee; --text3:#8991c9;
+  --glass:rgba(255,255,255,0.07); --border:rgba(255,255,255,0.14); --border2:rgba(255,255,255,0.24);
+  --font:Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100vh;font-family:var(--font);color:var(--text);}
+body{
+  background:
+    radial-gradient(circle at 15% 0%, rgba(23,201,141,0.32), transparent 55%),
+    radial-gradient(circle at 90% 10%, rgba(124,92,255,0.25), transparent 50%),
+    radial-gradient(circle at 50% 100%, rgba(255,201,77,0.12), transparent 55%),
+    #070a1a;
+  background-attachment:fixed;
+  padding-bottom:90px;
+}
+.glass{ background:var(--glass); backdrop-filter:blur(22px) saturate(160%); -webkit-backdrop-filter:blur(22px) saturate(160%); border:1px solid var(--border); border-radius:20px; }
+
+/* GATE */
+.gate{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;
+  background: radial-gradient(circle at 30% 20%, rgba(23,201,141,0.4), transparent 55%), radial-gradient(circle at 80% 80%, rgba(124,92,255,0.3), transparent 50%), #050712;}
+.gate-box{padding:34px 26px;width:100%;max-width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.45);}
+.gate-icon{width:56px;height:56px;margin:0 auto 16px;border-radius:16px;background:linear-gradient(135deg,var(--accent),#0d8f66);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 24px rgba(23,201,141,0.45);}
+.gate-box h1{font-size:19px;font-weight:800;margin-bottom:6px;}
+.gate-box p{font-size:13px;color:var(--text3);margin-bottom:22px;}
+.gate-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:14px;padding:14px 16px;font-size:16px;color:var(--text);margin-bottom:14px;text-align:center;font-family:var(--font);outline:none;}
+.gate-input:focus{border-color:var(--accent);background:rgba(255,255,255,0.09);}
+.gate-btn{width:100%;background:linear-gradient(135deg,var(--accent),#0d8f66);border:none;border-radius:14px;padding:14px;color:#04140e;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--font);box-shadow:0 10px 28px rgba(23,201,141,0.35);}
+.gate-err{color:var(--danger);font-size:13px;margin-top:12px;display:none;}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:50;padding:16px;border-bottom:1px solid var(--border);
+  background:rgba(7,10,26,0.6); backdrop-filter:blur(24px) saturate(160%); -webkit-backdrop-filter:blur(24px) saturate(160%);}
+.topbar-title{font-size:19px;font-weight:900;letter-spacing:-.3px;display:flex;align-items:center;gap:8px;}
+.topbar-title .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);}
+.topbar-title .accent{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.topbar-stats{display:flex;gap:10px;margin-top:12px;}
+.mini-stat{flex:1;padding:12px 10px;text-align:center;}
+.mini-stat .n{font-size:19px;font-weight:900;background:linear-gradient(135deg,#fff,var(--text2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.mini-stat .l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
+
+/* TABS */
+.tabs{display:flex;gap:8px;padding:14px 16px 0;}
+.tab-btn{flex:1;padding:12px 4px;border-radius:14px;background:var(--glass);border:1px solid var(--border);color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);text-align:center;backdrop-filter:blur(16px);}
+.tab-btn.active{background:linear-gradient(135deg,var(--accent),#0d8f66);color:#04140e;border-color:transparent;box-shadow:0 8px 20px rgba(23,201,141,0.35);}
+
+.section{display:none;padding:16px;}
+.section.active{display:block;animation:fadeIn .35s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.card{padding:16px;margin-bottom:12px;}
+.row{display:flex;align-items:center;gap:10px;}
+.grow{flex:1;min-width:0;}
+.avatar-mini{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent2),#4c33c9);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;overflow:hidden;}
+.avatar-mini img{width:100%;height:100%;object-fit:cover;}
+.name{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.badge{font-size:12px;font-weight:800;padding:6px 12px;border-radius:10px;white-space:nowrap;}
+.badge.bal{background:rgba(23,201,141,0.14);color:var(--accent);border:1px solid rgba(23,201,141,0.25);}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.stat-cell{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:9px 6px;text-align:center;}
+.stat-cell .v{font-size:14px;font-weight:800;}
+.stat-cell .k{font-size:9px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.3px;}
+
+/* CONTROLS */
+.controls-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.chip{padding:8px 15px;border-radius:20px;background:var(--glass);border:1px solid var(--border);color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);backdrop-filter:blur(14px);}
+.chip.active{background:linear-gradient(135deg,var(--accent),#0d8f66);color:#04140e;border-color:transparent;}
+.sort-select{margin-left:auto;background:var(--glass);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:9px 12px;font-size:12px;font-family:var(--font);backdrop-filter:blur(14px);}
+
+.bulk-row{display:flex;gap:8px;margin-bottom:16px;}
+.bulk-btn{flex:1;padding:13px;border-radius:14px;border:1px solid var(--border);font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);backdrop-filter:blur(14px);}
+.bulk-btn.approve{background:linear-gradient(135deg,rgba(23,201,141,0.22),rgba(23,201,141,0.10));color:var(--accent);border-color:rgba(23,201,141,0.3);}
+.bulk-btn.reject{background:linear-gradient(135deg,rgba(255,92,124,0.22),rgba(255,92,124,0.10));color:var(--danger);border-color:rgba(255,92,124,0.3);}
+
+.wd-actions{display:flex;gap:8px;margin-top:12px;}
+.wd-btn{flex:1;padding:10px;border-radius:12px;border:1px solid var(--border);font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);}
+.wd-btn.approve{background:rgba(23,201,141,0.14);color:var(--accent);border-color:rgba(23,201,141,0.25);}
+.wd-btn.reject{background:rgba(255,92,124,0.14);color:var(--danger);border-color:rgba(255,92,124,0.25);}
+.status-badge{padding:5px 12px;border-radius:10px;font-size:11px;font-weight:800;white-space:nowrap;border:1px solid transparent;}
+.status-badge.pending{background:rgba(255,201,77,0.14);color:var(--gold);border-color:rgba(255,201,77,0.25);}
+.status-badge.completed{background:rgba(23,201,141,0.14);color:var(--accent);border-color:rgba(23,201,141,0.25);}
+.status-badge.rejected{background:rgba(255,92,124,0.14);color:var(--danger);border-color:rgba(255,92,124,0.25);}
+
+/* BROADCAST FORM */
+.form-label{font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:block;}
+.form-input,.form-textarea{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:14px;padding:13px 15px;font-size:14px;color:var(--text);font-family:var(--font);margin-bottom:16px;outline:none;}
+.form-input:focus,.form-textarea:focus{border-color:var(--accent);background:rgba(255,255,255,0.08);}
+.form-textarea{min-height:110px;resize:vertical;}
+.btn-row-item{display:flex;gap:8px;margin-bottom:8px;}
+.btn-row-item input{flex:1;margin-bottom:0;}
+.remove-btn{background:rgba(255,92,124,0.14);color:var(--danger);border:1px solid rgba(255,92,124,0.25);border-radius:12px;width:44px;font-size:17px;cursor:pointer;flex-shrink:0;}
+.add-btn-link{background:rgba(255,255,255,0.03);border:1.5px dashed var(--border2);color:var(--text2);border-radius:14px;padding:12px;font-size:13px;width:100%;cursor:pointer;font-family:var(--font);margin-bottom:16px;font-weight:600;}
+.send-btn{width:100%;background:linear-gradient(135deg,var(--gold),#ff9147);border:none;border-radius:16px;padding:16px;color:#1a1200;font-size:15px;font-weight:900;cursor:pointer;font-family:var(--font);box-shadow:0 12px 32px rgba(255,182,72,0.3);}
+.send-btn:disabled{opacity:.45;box-shadow:none;}
+.progress-wrap{margin-top:16px;display:none;}
+.progress-wrap.show{display:block;}
+.progress-bar{background:rgba(255,255,255,0.08);border-radius:10px;height:9px;overflow:hidden;border:1px solid var(--border);}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));width:0%;transition:width .3s;}
+.progress-text{font-size:12px;color:var(--text2);margin-top:8px;text-align:center;font-weight:600;}
+
+.preview-note{padding:13px 15px;font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.7;}
+.empty-note{text-align:center;padding:50px 0;color:var(--text3);font-size:13px;}
+.loading-note{text-align:center;padding:50px 0;color:var(--text2);font-size:13px;}
+.loading-note::before{content:'';display:block;width:26px;height:26px;margin:0 auto 12px;border-radius:50%;border:2.5px solid rgba(255,255,255,0.15);border-top-color:var(--accent);animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div class="gate" id="gate">
+  <div class="gate-box glass">
+    <div class="gate-icon">🔐</div>
+    <h1>USDT Reward Hub — Admin</h1>
+    <p>Enter password to continue</p>
+    <input type="password" class="gate-input" id="gatePass" placeholder="Password">
+    <button class="gate-btn" onclick="checkPass()">Enter</button>
+    <div class="gate-err" id="gateErr">Incorrect password</div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-title"><span class="dot"></span><span class="accent">USDT</span>&nbsp;Reward Hub — Admin</div>
+  <div class="topbar-stats">
+    <div class="mini-stat glass"><div class="n" id="statUsers">–</div><div class="l">Users</div></div>
+    <div class="mini-stat glass"><div class="n" id="statPending">–</div><div class="l">Pending</div></div>
+    <div class="mini-stat glass"><div class="n" id="statBalance">–</div><div class="l">Total Balance</div></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchAdminTab('users')" id="tabBtnUsers">👥 Users</button>
+  <button class="tab-btn" onclick="switchAdminTab('withdrawals')" id="tabBtnWithdrawals">💸 Payouts</button>
+  <button class="tab-btn" onclick="switchAdminTab('broadcast')" id="tabBtnBroadcast">📢 Broadcast</button>
+</div>
+
+<!-- USERS SECTION -->
+<div class="section active" id="secUsers">
+  <div class="controls-row">
+    <select class="sort-select" id="userSort" onchange="renderUsers()">
+      <option value="lastActive">Most recent</option>
+      <option value="balance">Highest balance</option>
+      <option value="friendsCount">Most referrals</option>
+      <option value="totalWatched">Most ads watched</option>
+    </select>
+    <button class="chip" onclick="loadUsers()">🔄 Refresh</button>
+  </div>
+  <div id="usersList"><div class="loading-note">Loading...</div></div>
+</div>
+
+<!-- WITHDRAWALS SECTION -->
+<div class="section" id="secWithdrawals">
+  <div class="controls-row">
+    <div class="chip active" data-status="pending" onclick="setWdFilter('pending')">Pending</div>
+    <div class="chip" data-status="completed" onclick="setWdFilter('completed')">Completed</div>
+    <div class="chip" data-status="rejected" onclick="setWdFilter('rejected')">Rejected</div>
+    <div class="chip" data-status="all" onclick="setWdFilter('all')">All</div>
+  </div>
+  <div class="bulk-row">
+    <button class="bulk-btn approve" onclick="bulkAction('completed')">✅ Approve All</button>
+    <button class="bulk-btn reject" onclick="bulkAction('rejected')">❌ Reject All</button>
+  </div>
+  <div id="withdrawalsList"><div class="loading-note">Loading...</div></div>
+</div>
+
+<!-- BROADCAST SECTION -->
+<div class="section" id="secBroadcast">
+  <div class="preview-note glass">The message is sent to every user who has ever opened the bot. If a video URL is given, it sends as a video; else a photo URL sends as a photo; otherwise just text.</div>
+
+  <label class="form-label">Bot Token</label>
+  <input type="password" class="form-input" id="botToken" placeholder="123456:ABC-DEF...">
+
+  <label class="form-label">Message Text</label>
+  <textarea class="form-textarea" id="bcText" placeholder="Write your message..."></textarea>
+
+  <label class="form-label">Photo URL (optional)</label>
+  <input type="text" class="form-input" id="bcPhoto" placeholder="https://example.com/image.jpg">
+
+  <label class="form-label">Video URL (optional)</label>
+  <input type="text" class="form-input" id="bcVideo" placeholder="https://example.com/video.mp4">
+
+  <label class="form-label">Inline Buttons (optional)</label>
+  <div id="btnRows"></div>
+  <button class="add-btn-link" onclick="addBtnRow()">+ Add Button</button>
+
+  <button class="send-btn" id="sendBtn" onclick="sendBroadcast()">🚀 Send to All Users</button>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">0 / 0</div>
+  </div>
+</div>
+
+<script>
+const FIREBASE_DB = "https://usdt-reward-default-rtdb.firebaseio.com";
+const ADMIN_PASSWORD = "usdthub2026"; // <-- change this to your own password
+
+// ====== GATE ======
+function checkPass(){
+  const val = document.getElementById('gatePass').value;
+  if(val === ADMIN_PASSWORD){
+    document.getElementById('gate').style.display = 'none';
+    sessionStorage.setItem('urh_admin_ok','1');
+    loadUsers();
+  } else {
+    document.getElementById('gateErr').style.display = 'block';
+  }
+}
+if(sessionStorage.getItem('urh_admin_ok') === '1'){
+  document.getElementById('gate').style.display = 'none';
+}
+document.getElementById('gatePass').addEventListener('keydown', e=>{ if(e.key==='Enter') checkPass(); });
+
+// ====== TABS ======
+function switchAdminTab(tab){
+  ['users','withdrawals','broadcast'].forEach(t=>{
+    document.getElementById('sec'+t.charAt(0).toUpperCase()+t.slice(1)).classList.remove('active');
+    document.getElementById('tabBtn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.remove('active');
+  });
+  document.getElementById('sec'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
+  document.getElementById('tabBtn'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
+  if(tab==='users') loadUsers();
+  if(tab==='withdrawals') loadWithdrawals();
+}
+
+// ====== USERS ======
+let usersCache = [];
+async function loadUsers(){
+  document.getElementById('usersList').innerHTML = '<div class="loading-note">Loading...</div>';
+  try{
+    const res = await fetch(`${FIREBASE_DB}/members.json`, { cache:'no-store' });
+    const data = await res.json();
+    usersCache = data ? Object.values(data) : [];
+    updateTopStats();
+    renderUsers();
+  }catch(e){
+    document.getElementById('usersList').innerHTML = '<div class="empty-note">Failed to load users</div>';
+  }
+}
+function renderUsers(){
+  const sortKey = document.getElementById('userSort').value;
+  const sorted = [...usersCache].sort((a,b)=>(b[sortKey]||0)-(a[sortKey]||0));
+  const list = document.getElementById('usersList');
+  if(!sorted.length){ list.innerHTML = '<div class="empty-note">No users yet</div>'; return; }
+  list.innerHTML = sorted.map(u=>`
+    <div class="card glass">
+      <div class="row">
+        <div class="avatar-mini">${u.photo?`<img src="${u.photo}">`:(u.name||'U').charAt(0).toUpperCase()}</div>
+        <div class="grow">
+          <div class="name">${escapeHtml(u.name||'User')}</div>
+          <div class="sub">ID: ${u.userId}</div>
+        </div>
+        <div class="badge bal">${(u.balance||0).toFixed(2)} USDT</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-cell"><div class="v">${u.totalWatched||0}</div><div class="k">Ads Watched</div></div>
+        <div class="stat-cell"><div class="v">${u.friendsCount||0}</div><div class="k">Referrals</div></div>
+        <div class="stat-cell"><div class="v">${u.tasksDone||0}</div><div class="k">Tasks</div></div>
+      </div>
+    </div>
+  `).join('');
+}
+function updateTopStats(){
+  document.getElementById('statUsers').textContent = usersCache.length;
+  const totalBal = usersCache.reduce((s,u)=>s+(u.balance||0),0);
+  document.getElementById('statBalance').textContent = totalBal.toFixed(1);
+}
+
+// ====== WITHDRAWALS (payouts) ======
+let withdrawalsCache = [];
+let wdFilter = 'pending';
+async function loadWithdrawals(){
+  document.getElementById('withdrawalsList').innerHTML = '<div class="loading-note">Loading...</div>';
+  try{
+    const res = await fetch(`${FIREBASE_DB}/payouts.json`, { cache:'no-store' });
+    const data = await res.json();
+    withdrawalsCache = data ? Object.keys(data).map(k=>({key:k,...data[k]})) : [];
+    withdrawalsCache.sort((a,b)=>(b.ts||0)-(a.ts||0));
+    const pendingCount = withdrawalsCache.filter(w=>w.status==='pending').length;
+    document.getElementById('statPending').textContent = pendingCount;
+    renderWithdrawals();
+  }catch(e){
+    document.getElementById('withdrawalsList').innerHTML = '<div class="empty-note">Failed to load payouts</div>';
+  }
+}
+function setWdFilter(f){
+  wdFilter = f;
+  document.querySelectorAll('#secWithdrawals .chip').forEach(c=>c.classList.toggle('active', c.getAttribute('data-status')===f));
+  renderWithdrawals();
+}
+function renderWithdrawals(){
+  const filtered = wdFilter==='all' ? withdrawalsCache : withdrawalsCache.filter(w=>w.status===wdFilter);
+  const list = document.getElementById('withdrawalsList');
+  if(!filtered.length){ list.innerHTML = '<div class="empty-note">Nothing here</div>'; return; }
+  list.innerHTML = filtered.map(w=>`
+    <div class="card glass">
+      <div class="row">
+        <div class="grow">
+          <div class="name">${escapeHtml(w.name||'User')}</div>
+          <div class="sub">ID: ${w.userId} · ${w.date||''}</div>
+        </div>
+        <span class="status-badge ${w.status}">${w.status}</span>
+      </div>
+      <div class="sub" style="margin-top:10px;font-size:13px;color:var(--text2)">💰 ${w.amount} ${w.currency||'USDT'}</div>
+      <div class="sub" style="word-break:break-all;font-family:monospace;margin-top:4px">📍 ${w.address||''}</div>
+      ${w.status==='pending' ? `
+      <div class="wd-actions">
+        <button class="wd-btn approve" onclick="setWdStatus('${w.key}','completed')">✅ Approve</button>
+        <button class="wd-btn reject" onclick="setWdStatus('${w.key}','rejected')">❌ Reject</button>
+      </div>` : ''}
+    </div>
+  `).join('');
+}
+async function setWdStatus(key, status){
+  try{
+    await fetch(`${FIREBASE_DB}/payouts/${key}.json`, {
+      method:'PATCH',
+      body: JSON.stringify({ status })
+    });
+    loadWithdrawals();
+  }catch(e){ alert('Failed to update'); }
+}
+async function bulkAction(status){
+  const targets = withdrawalsCache.filter(w=>w.status==='pending');
+  if(!targets.length){ alert('Nothing to do'); return; }
+  if(!confirm(`Are you sure you want to ${status==='completed'?'approve':'reject'} ${targets.length} item(s)?`)) return;
+  for(const w of targets){
+    await fetch(`${FIREBASE_DB}/payouts/${w.key}.json`, { method:'PATCH', body: JSON.stringify({status}) });
+  }
+  loadWithdrawals();
+}
+
+// ====== BROADCAST ======
+let btnRowCount = 0;
+function addBtnRow(){
+  btnRowCount++;
+  const id = 'btnRow'+btnRowCount;
+  const div = document.createElement('div');
+  div.className = 'btn-row-item';
+  div.id = id;
+  div.innerHTML = `
+    <input type="text" class="form-input btn-text" placeholder="Button text">
+    <input type="text" class="form-input btn-url" placeholder="URL (https://...)">
+    <button class="remove-btn" onclick="document.getElementById('${id}').remove()">✕</button>
+  `;
+  document.getElementById('btnRows').appendChild(div);
+}
+
+async function sendBroadcast(){
+  const token = document.getElementById('botToken').value.trim();
+  const text = document.getElementById('bcText').value.trim();
+  const photo = document.getElementById('bcPhoto').value.trim();
+  const video = document.getElementById('bcVideo').value.trim();
+  if(!token){ alert('Enter the bot token'); return; }
+  if(!text && !photo && !video){ alert('At least text, photo, or video is required'); return; }
+
+  const buttons = [];
+  document.querySelectorAll('.btn-row-item').forEach(row=>{
+    const tEl = row.querySelector('.btn-text');
+    const uEl = row.querySelector('.btn-url');
+    const tv = tEl.value.trim();
+    const uv = uEl.value.trim();
+    if(tv && uv) buttons.push([{ text: tv, url: uv }]);
+  });
+  const reply_markup = buttons.length ? { inline_keyboard: buttons } : undefined;
+
+  if(!usersCache.length){ await loadUsers(); }
+  if(!usersCache.length){ alert('No users found to send to'); return; }
+
+  const sendBtn = document.getElementById('sendBtn');
+  sendBtn.disabled = true;
+  const progressWrap = document.getElementById('progressWrap');
+  progressWrap.classList.add('show');
+  let sent = 0, failed = 0;
+  const total = usersCache.length;
+
+  for(const u of usersCache){
+    const chatId = u.userId;
+    try{
+      let method = 'sendMessage';
+      let body = { chat_id: chatId, text: text || ' ', reply_markup };
+      if(video){
+        method = 'sendVideo';
+        body = { chat_id: chatId, video, caption: text || undefined, reply_markup };
+      } else if(photo){
+        method = 'sendPhoto';
+        body = { chat_id: chatId, photo, caption: text || undefined, reply_markup };
+      }
+      const res = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if(data.ok) sent++; else failed++;
+    }catch(e){ failed++; }
+    const done = sent + failed;
+    document.getElementById('progressFill').style.width = (done/total*100)+'%';
+    document.getElementById('progressText').textContent = `${done} / ${total} sent (${failed} failed)`;
+    await new Promise(r=>setTimeout(r, 60));
+  }
+  sendBtn.disabled = false;
+  alert(`Done.\nSent: ${sent}\nFailed: ${failed}`);
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
