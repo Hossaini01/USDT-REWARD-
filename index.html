@@ -595,11 +595,11 @@ const HOME_TICKS = [
 
 // Channel-join / bot-start tasks shown in Tasks tab below Watch & Earn
 const TASKS_DATA = [
-  {id:'t1',type:'channel',name:'Reward Hub News',link:'https://t.me/RewardHubNews',reward:0.2},
-  {id:'t2',type:'channel',name:'USDT Community',link:'https://t.me/USDTCommunityChat',reward:0.2},
-  {id:'t3',type:'channel',name:'Announcements',link:'https://t.me/RewardHubAnnounce',reward:0.2},
-  {id:'t4',type:'bot',name:'Partner Bot',link:'https://t.me/USDT_Reward_Hubbot/hub?startapp=partner1',reward:0.2},
-  {id:'t5',type:'bot',name:'Bonus Bot',link:'https://t.me/USDT_Reward_Hubbot/hub?startapp=partner2',reward:0.2},
+  {id:'t1',type:'channel',name:'USDT Reward Hub Channel',link:'https://t.me/XIONRO',reward:0.2},
+  {id:'t2',type:'channel',name:'Beast Hack',link:'https://t.me/Beast_Hac1k',reward:0.2},
+  {id:'t3',type:'channel',name:'Money Plus',link:'https://t.me/Money_Plus12',reward:0.2},
+  {id:'t4',type:'bot',name:'Money Plus Bot',link:'https://t.me/Money_Plus12_Bot/moneyplus?startapp=6423335359',reward:0.2},
+  {id:'t5',type:'bot',name:'Cash Plus Bot',link:'https://t.me/CashPlus_Bot/cashplus?startapp=5206091997',reward:0.2},
 ];
 
 function iconFor(type){
@@ -930,7 +930,7 @@ function watchAd() {
 }
 
 // ====== REFERRAL ======
-function getInviteLink(uid){ return `https://t.me/USDT_Reward_Hubbot/hub?startapp=${uid||'USER_ID'}`; }
+function getInviteLink(uid){ return `https://t.me/USDT_Reward_Hubbot/usdt?startapp=${uid||'USER_ID'}`; }
 
 function renderInvite(){
   const link = getInviteLink(S.userId);
